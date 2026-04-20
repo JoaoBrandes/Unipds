@@ -1,0 +1,5 @@
+node_modules/
+dist/
+web/.next/
+web/node_modules/
+package-lock.json

@@ -1,0 +1,329 @@
+:root {
+  --bg: #f7f6f2;
+  --text: #1b1a18;
+  --panel: #ffffff;
+  --panel-soft: #f0ebe2;
+  --line: #d8ccbb;
+  --accent: #005f73;
+  --accent-soft: #0a9396;
+  --warm: #ee9b00;
+  --danger: #bb3e03;
+}
+
+html {
+  height: 100%;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 10%, #fff3bf 0, transparent 40%),
+    radial-gradient(circle at 90% 20%, #cae9ff 0, transparent 35%),
+    linear-gradient(180deg, #f9f4ea 0%, #f3ece0 100%);
+  font-family: var(--font-body), "Courier New", monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page-shell {
+  width: min(1100px, 100% - 2rem);
+  margin: 2rem auto;
+}
+
+.chat-page .page-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.chat-header {
+  background: linear-gradient(120deg, #0a9396 0%, #005f73 100%);
+  color: #f8f8f8;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  border: 2px solid #084c5a;
+  box-shadow: 0 10px 30px rgba(0, 47, 54, 0.18);
+}
+
+.chat-header h1 {
+  font-family: var(--font-headline), sans-serif;
+  line-height: 1.05;
+  margin: 0.35rem 0;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  opacity: 0.92;
+}
+
+.chat-window {
+  display: grid;
+  gap: 0.8rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.78);
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(2px);
+}
+
+.bubble {
+  border-radius: 1rem;
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  animation: riseIn 0.22s ease;
+}
+
+.bubble-user {
+  margin-left: auto;
+  max-width: 78%;
+  background: #fff8e7;
+  border-color: #f6d7a7;
+}
+
+.bubble-assistant {
+  max-width: 100%;
+  background: var(--panel);
+}
+
+.cards-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.pokemon-card {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0.65rem;
+  padding: 0.65rem;
+  border: 1px solid #c8d2d4;
+  border-radius: 0.8rem;
+  background: linear-gradient(140deg, #f5fdff 0%, #eefbf8 100%);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.pokemon-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 42, 54, 0.12);
+}
+
+.pokemon-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 0.55rem;
+}
+
+.pokemon-card h3 {
+  font-family: var(--font-headline), sans-serif;
+  margin-bottom: 0.2rem;
+}
+
+.pokemon-card p {
+  font-size: 0.86rem;
+  line-height: 1.3;
+  margin-bottom: 0.35rem;
+}
+
+.pokemon-card small {
+  color: #2e4d57;
+  font-weight: 700;
+}
+
+.chat-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem;
+}
+
+.chat-form input {
+  border: 2px solid #b7a997;
+  border-radius: 0.8rem;
+  background: #fffdf9;
+  padding: 0.85rem 0.95rem;
+  outline: none;
+  font: inherit;
+}
+
+.chat-form input:focus {
+  border-color: var(--accent-soft);
+}
+
+.chat-form button {
+  border: none;
+  border-radius: 0.8rem;
+  padding: 0.85rem 1.15rem;
+  background: linear-gradient(120deg, var(--warm), #ca6702);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.detail-page .page-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.back-link {
+  color: #004f5f;
+  font-weight: 700;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 1rem;
+}
+
+.sprite-card,
+.stats-card,
+.accordion-stack details {
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  background: var(--panel);
+}
+
+.sprite-card {
+  padding: 1rem;
+}
+
+.sprite-card h1 {
+  font-family: var(--font-headline), sans-serif;
+  margin-bottom: 0.35rem;
+}
+
+.pokemon-art {
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  background: linear-gradient(150deg, #fff9e8 0%, #e3f9ff 100%);
+  border-radius: 0.7rem;
+  margin-bottom: 0.85rem;
+}
+
+.stats-card {
+  padding: 1rem;
+}
+
+.stats-card h2 {
+  margin-bottom: 0.65rem;
+  font-family: var(--font-headline), sans-serif;
+}
+
+.stats-card ul {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.stats-card li {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #d4c7b7;
+  padding-bottom: 0.35rem;
+}
+
+.accordion-stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.accordion-stack details {
+  padding: 0.75rem 0.85rem;
+}
+
+.accordion-stack summary {
+  cursor: pointer;
+  font-family: var(--font-headline), sans-serif;
+}
+
+.chip-grid {
+  margin-top: 0.65rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 0.3rem 0.55rem;
+  background: var(--panel-soft);
+  border: 1px solid #d7cbbd;
+  border-radius: 999px;
+  font-size: 0.84rem;
+}
+
+.meta-grid {
+  margin-top: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.6rem;
+}
+
+.meta-grid label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: #6d6257;
+  margin-bottom: 0.2rem;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-window {
+    max-height: 55vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    width: min(1100px, 100% - 1rem);
+    margin: 1rem auto;
+  }
+
+  .chat-form {
+    grid-template-columns: 1fr;
+  }
+}
