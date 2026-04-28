@@ -1,4 +1,4 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { createLLM, hasLLMKey } from "../llm";
 import { ClarificationSchema } from "../schemas";
 import type { GraphStateType } from "../state";
 
@@ -22,10 +22,8 @@ Generate a helpful clarifying question to understand what they're looking for.
 export async function clarificationNode(
   state: GraphStateType
 ): Promise<Partial<GraphStateType>> {
-  const apiKey = process.env.OPENAI_API_KEY;
-
   // Fallback to static clarification if no API key
-  if (!apiKey) {
+  if (!hasLLMKey()) {
     return {
       clarificationQuestion: generateStaticClarification(state),
       responseText: generateStaticClarification(state),
@@ -34,11 +32,7 @@ export async function clarificationNode(
   }
 
   try {
-    const model = new ChatOpenAI({
-      modelName: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-      temperature: 0.7,
-      apiKey
-    });
+    const model = createLLM(0.7);
 
     const structuredModel = model.withStructuredOutput(ClarificationSchema);
 

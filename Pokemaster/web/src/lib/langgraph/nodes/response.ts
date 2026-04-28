@@ -1,22 +1,23 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { createLLM, hasLLMKey } from "../llm";
 import type { GraphStateType } from "../state";
 
-const RESPONSE_SYSTEM_PROMPT = `You are Pokemaster, a friendly Pokemon assistant.
+const RESPONSE_SYSTEM_PROMPT = `You are Pokemaster, a knowledgeable and friendly Pokemon expert companion.
 
-Generate a natural, conversational response based on the search results and user's intent.
+Generate a natural, conversational response based on the search results and the user's question.
 
 **Guidelines:**
-- Be enthusiastic but not over-the-top
-- If Pokemon were found, briefly summarize what was found
+- Answer the user's actual question directly — don't just acknowledge that results were found
+- If the user asked a descriptive/trait question (e.g., "which pokemon mimics others"), explain WHY the found Pokemon match (e.g., "Ditto is famous for its ability to transform into any Pokémon it encounters")
+- Mention the Pokemon found by name and briefly explain the connection to the question
+- Keep responses concise (2-4 sentences) but informative
 - Mention that they can click any card to see full details
-- Keep responses concise (2-3 sentences max)
 - If comparing Pokemon, highlight key differences
-- If no results found, be helpful and suggest alternatives
 
 **Do NOT:**
-- List out all the Pokemon (the cards will show that)
-- Give lengthy explanations
-- Use excessive punctuation or emojis`;
+- Just say "I found X pokemon" without explaining why they match
+- List out all the Pokemon stats (the cards will show that)
+- Use excessive punctuation or emojis
+- Be vague — always tie the answer back to what the user asked`;
 
 /**
  * Node that generates the final response based on search results
@@ -25,7 +26,6 @@ export async function responseNode(
   state: GraphStateType
 ): Promise<Partial<GraphStateType>> {
   const { searchResults, intent, extractedEntities, userMessage, error } = state;
-  const apiKey = process.env.OPENAI_API_KEY;
 
   // Handle errors
   if (error) {
@@ -42,18 +42,14 @@ export async function responseNode(
   }
 
   // Fallback to static response if no API key
-  if (!apiKey) {
+  if (!hasLLMKey()) {
     return {
       responseText: generateStaticResponse(state)
     };
   }
 
   try {
-    const model = new ChatOpenAI({
-      modelName: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-      temperature: 0.6,
-      apiKey
-    });
+    const model = createLLM(0.6);
 
     const context = {
       intent,

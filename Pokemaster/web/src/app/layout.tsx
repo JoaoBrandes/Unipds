@@ -14,8 +14,8 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pokemaster Assistant",
-  description: "Chat-driven Pokemon discovery and deep stat exploration",
+  title: "Pokémaster — Your Trainer Companion",
+  description: "AI-powered Pokédex companion. Discover Pokémon by type, compare stats, and explore your team.",
 };
 
 export default function RootLayout({

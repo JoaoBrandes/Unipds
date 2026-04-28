@@ -1,4 +1,4 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { createLLM, hasLLMKey } from "../llm";
 import { IntentClassificationSchema } from "../schemas";
 import type { GraphStateType } from "../state";
 
@@ -8,27 +8,38 @@ const KNOWN_TYPES = [
   "rock", "ghost", "dragon", "dark", "steel", "fairy"
 ];
 
-const INTENT_SYSTEM_PROMPT = `You are a Pokemon assistant that classifies user intents.
+const INTENT_SYSTEM_PROMPT = `You are a Pokemon expert assistant that classifies user intents AND resolves descriptive questions into specific Pokemon names using your knowledge.
 
 Analyze the user's message and determine their intent:
 
 **Intent Types:**
-- "name_search": User wants to find a specific Pokemon by name (e.g., "show me pikachu", "find charizard")
+- "name_search": User wants a specific Pokemon, OR you can identify which Pokemon(s) match a described trait/behavior/characteristic
 - "type_search": User wants Pokemon of a certain type (e.g., "fire pokemon", "what water types are there")
-- "stats_question": User asks about stats, abilities, or moves (e.g., "what are charizard's stats", "best fire moves")
+- "stats_question": User asks about stats, abilities, or moves of named Pokemon (e.g., "what are charizard's stats")
 - "comparison": User wants to compare Pokemon (e.g., "charizard vs blastoise", "who is stronger")
-- "clarification_needed": Intent is unclear or too vague to act on (e.g., "pokemon", "help", "tell me more")
-- "general": General Pokemon knowledge question not fitting above (e.g., "how many pokemon are there")
+- "clarification_needed": Intent is completely unclear and you cannot guess any relevant Pokemon (e.g., "pokemon", "help")
+- "general": General Pokemon world question with no specific Pokemon answer (e.g., "how many generations are there")
+
+**CRITICAL — Resolve traits to Pokemon names:**
+Users often describe Pokemon by behavior, appearance, or lore instead of naming them. Use your Pokemon knowledge to identify which Pokemon they mean and populate pokemonNames accordingly.
+
+Examples:
+- "which pokemon mimics other pokemon" → pokemonNames: ["ditto"], intent: "name_search"
+- "the pokemon that evolves with a moon stone" → pokemonNames: ["nidorino", "nidorina", "clefairy", "jigglypuff"], intent: "name_search"
+- "pokemon that sleeps all day" → pokemonNames: ["snorlax"], intent: "name_search"
+- "smallest pokemon" → pokemonNames: ["joltik", "flabebe"], intent: "name_search"
+- "ghost pokemon that steals life force" → pokemonNames: ["haunter", "gengar", "gastly"], intent: "name_search"
+- "pokemon inspired by a fox" → pokemonNames: ["vulpix", "ninetales", "eevee", "fennekin"], intent: "name_search"
 
 **Entity Extraction:**
-- Extract Pokemon names mentioned (lowercase, no special characters)
+- pokemonNames: Always include Pokemon names — both explicitly mentioned AND resolved from descriptions
 - Extract types mentioned from: ${KNOWN_TYPES.join(", ")}
 - Extract attributes: hp, attack, defense, speed, special-attack, special-defense, abilities, moves, height, weight
 
 **Guidelines:**
-- If user mentions a Pokemon name, prefer "name_search" unless they're comparing
-- If user mentions a type without a specific Pokemon, prefer "type_search"
-- Use "clarification_needed" only when you truly cannot determine what the user wants
+- ALWAYS try to identify relevant Pokemon before falling back to "clarification_needed"
+- If the user describes a trait and you can identify matching Pokemon, use "name_search" with those names
+- Only use "clarification_needed" when the question is so vague that no Pokemon can be inferred
 - Confidence should reflect how certain you are (0.9+ for clear intents, 0.5-0.7 for ambiguous)`;
 
 /**
@@ -37,19 +48,13 @@ Analyze the user's message and determine their intent:
 export async function classifyIntentNode(
   state: GraphStateType
 ): Promise<Partial<GraphStateType>> {
-  const apiKey = process.env.OPENAI_API_KEY;
-
   // Fallback to simple heuristics if no API key
-  if (!apiKey) {
+  if (!hasLLMKey()) {
     return classifyWithHeuristics(state.userMessage);
   }
 
   try {
-    const model = new ChatOpenAI({
-      modelName: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
-      temperature: 0.1,
-      apiKey
-    });
+    const model = createLLM(0.1);
 
     const structuredModel = model.withStructuredOutput(IntentClassificationSchema);
 

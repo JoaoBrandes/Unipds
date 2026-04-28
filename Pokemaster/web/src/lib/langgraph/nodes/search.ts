@@ -90,11 +90,28 @@ export async function searchNode(
 
       case "general":
       default: {
-        // Try a general search on the message
-        if (types.length > 0) {
+        // Try a general search — if names were resolved by LLM, look them all up
+        if (pokemonNames.length > 0) {
+          const exactResults = await Promise.allSettled(
+            pokemonNames.slice(0, 8).map((name) => getPokemonCard(name))
+          );
+          searchResults = exactResults
+            .filter(
+              (r): r is PromiseFulfilledResult<PokemonCard> =>
+                r.status === "fulfilled"
+            )
+            .map((r) => r.value);
+
+          // Fall back to fuzzy if exact found nothing
+          if (searchResults.length === 0) {
+            for (const name of pokemonNames.slice(0, 3)) {
+              const matches = await getPokemonByNameMatch(name, 5);
+              searchResults.push(...matches);
+              if (searchResults.length >= 10) break;
+            }
+          }
+        } else if (types.length > 0) {
           searchResults = await getPokemonByType(types[0], 10);
-        } else if (pokemonNames.length > 0) {
-          searchResults = await getPokemonByNameMatch(pokemonNames[0], 10);
         }
         break;
       }
