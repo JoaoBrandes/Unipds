@@ -30,6 +30,9 @@ Examples:
 - "smallest pokemon" → pokemonNames: ["joltik", "flabebe"], intent: "name_search"
 - "ghost pokemon that steals life force" → pokemonNames: ["haunter", "gengar", "gastly"], intent: "name_search"
 - "pokemon inspired by a fox" → pokemonNames: ["vulpix", "ninetales", "eevee", "fennekin"], intent: "name_search"
+- "fire pokemon from generation 2" → pokemonNames: ["cyndaquil", "quilava", "typhlosion", "slugma", "magcargo", "houndour", "houndoom", "magby", "entei"], types: ["fire"], intent: "type_search"
+- "grass starters" → pokemonNames: ["bulbasaur", "chikorita", "treecko", "turtwig", "snivy", "chespin", "rowlet", "grookey", "sprigatito"], types: ["grass"], intent: "type_search"
+- "water pokemon from gen 1" → pokemonNames: ["squirtle", "wartortle", "blastoise", "psyduck", "golduck", "poliwag", "poliwhirl", "poliwrath", "tentacool", "tentacruel", "slowpoke", "slowbro", "seel", "dewgong", "shellder", "cloyster", "krabby", "kingler", "horsea", "seadra", "goldeen", "seaking", "staryu", "starmie", "magikarp", "gyarados", "lapras", "vaporeon"], types: ["water"], intent: "type_search"
 
 **Entity Extraction:**
 - pokemonNames: Always include Pokemon names — both explicitly mentioned AND resolved from descriptions

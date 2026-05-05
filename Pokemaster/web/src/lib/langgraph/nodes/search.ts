@@ -52,8 +52,21 @@ export async function searchNode(
       }
 
       case "type_search": {
-        // Search for Pokemon by type
-        if (types.length > 0) {
+        // If the LLM resolved specific Pokemon names (e.g. gen-constrained queries), use those
+        if (pokemonNames.length > 0) {
+          const exactResults = await Promise.allSettled(
+            pokemonNames.slice(0, 12).map((name) => getPokemonCard(name))
+          );
+          searchResults = exactResults
+            .filter(
+              (r): r is PromiseFulfilledResult<PokemonCard> =>
+                r.status === "fulfilled"
+            )
+            .map((r) => r.value);
+        }
+
+        // Fall back to generic type search when no specific names were resolved
+        if (searchResults.length === 0 && types.length > 0) {
           for (const typeName of types.slice(0, 2)) {
             const typeResults = await getPokemonByType(typeName, 8);
             searchResults.push(...typeResults);
